@@ -82,6 +82,7 @@ function processSingleTest(
             infer: { projectVersionFromCommit: false },
             quiet: options.quiet,
             showProgressRateLimit: undefined,
+            syntaxHighlighting: options.syntaxHighlighting ?? true,
         });
     } catch (error) {
         results.failed.push({

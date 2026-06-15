@@ -87,6 +87,7 @@ function snapshotAction(snapshotRoot: string, options: SnapshotOptions): void {
             infer: { projectVersionFromCommit: false },
             quiet: options.quiet,
             showProgressRateLimit: undefined,
+            syntaxHighlighting: options.syntaxHighlighting,
         });
 
         const scipIndexPath = path.join(projectRoot, options.output);

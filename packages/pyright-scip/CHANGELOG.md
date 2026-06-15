@@ -1,5 +1,11 @@
 # scip-python CHANGELOG
 
+## Unreleased
+
+- Emits `syntax_kind` occurrences for syntax highlighting (keywords,
+  strings, numbers, comments, operators, and punctuation). Pass
+  `--no-syntax-highlighting` to disable.
+
 ## v0.6.6
 
 - Changes package listing to use Python's `importlib` instead of

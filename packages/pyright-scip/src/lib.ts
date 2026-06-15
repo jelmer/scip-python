@@ -36,10 +36,12 @@ const formatOptionsPrefix = '# format-options:';
 function parseOptions(lines: string[]): {
     showDocs: boolean;
     showRanges: boolean;
+    showSyntaxKinds: boolean;
 } {
     const formatOptions = {
         showDocs: false,
         showRanges: false,
+        showSyntaxKinds: false,
     };
 
     for (let line of lines) {
@@ -259,6 +261,15 @@ export function formatSnapshot(
                 continue;
             }
 
+            const hasSymbol = occurrence.symbol !== '';
+
+            // Syntax-highlighting-only occurrences carry no symbol. They are
+            // only rendered when explicitly requested, to keep snapshots that
+            // focus on semantic occurrences readable.
+            if (!hasSymbol && !formatOptions.showSyntaxKinds) {
+                continue;
+            }
+
             if (occurrence.range.length > 3) {
                 throw 'not yet implemented, multi-line ranges';
             }
@@ -282,6 +293,14 @@ export function formatSnapshot(
             }
             out.push('^'.repeat(caretLength));
             out.push(' ');
+
+            if (!hasSymbol) {
+                out.push('syntax ');
+                out.push(syntaxKindName(occurrence.syntax_kind));
+                out.push('\n');
+                continue;
+            }
+
             const isDefinition = (occurrence.symbol_roles & scip.SymbolRole.Definition) > 0;
             out.push(isDefinition ? 'definition' : 'reference');
             out.push(' ');
@@ -289,6 +308,11 @@ export function formatSnapshot(
                 ? occurrence.symbol.slice(packageName.length)
                 : occurrence.symbol;
             out.push(symbol.replace('\n', '|'));
+
+            if (formatOptions.showSyntaxKinds && occurrence.syntax_kind !== scip.SyntaxKind.UnspecifiedSyntaxKind) {
+                out.push(' syntax ');
+                out.push(syntaxKindName(occurrence.syntax_kind));
+            }
 
             pushDoc(range, occurrence.symbol, isDefinition, isStartOfLine);
         }
@@ -327,6 +351,20 @@ export function diffSnapshot(outputPath: string, obtained: string): 'equal' | 'd
         )
     );
     return 'different';
+}
+
+function syntaxKindName(kind: scip.SyntaxKind): string {
+    // Some enum values have multiple names (a canonical one plus a deprecated
+    // alias). The reverse lookup returns the last-declared name, so prefer the
+    // canonical name explicitly for those.
+    switch (kind) {
+        case scip.SyntaxKind.Keyword:
+            return 'Keyword';
+        case scip.SyntaxKind.IdentifierNamespace:
+            return 'IdentifierNamespace';
+        default:
+            return scip.SyntaxKind[kind] ?? String(kind);
+    }
 }
 
 function occurrencesByLine(a: scip.Occurrence, b: scip.Occurrence): number {

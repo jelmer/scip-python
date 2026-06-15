@@ -8,6 +8,7 @@ import { ImportResolver } from 'pyright-internal/analyzer/importResolver';
 import { createFromRealFileSystem } from 'pyright-internal/common/realFileSystem';
 import { ConfigOptions } from 'pyright-internal/common/configOptions';
 import { TreeVisitor } from './treeVisitor';
+import { addSyntaxHighlighting } from './syntaxHighlighting';
 import { FullAccessHost } from 'pyright-internal/common/fullAccessHost';
 import { normalizePathCase } from 'pyright-internal/common/pathUtils';
 import * as url from 'url';
@@ -255,6 +256,10 @@ export class Indexer {
                         currentFilepath: sourceFile.getFilePath(),
                         error: e,
                     };
+                }
+
+                if (this.scipConfig.syntaxHighlighting && parseResults?.tokenizerOutput) {
+                    addSyntaxHighlighting(doc, parseResults.tokenizerOutput);
                 }
 
                 if (doc.occurrences.length === 0) {

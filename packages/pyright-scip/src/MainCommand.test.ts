@@ -22,8 +22,10 @@ checkIndexParser([], {
     cwd: process.cwd(),
     output: DEFAULT_OUTPUT_FILE,
     projectName: 'snapshot-util',
+    syntaxHighlighting: true,
 });
 
+checkIndexParser(['--no-syntax-highlighting'], { syntaxHighlighting: false });
 checkIndexParser(['--cwd', 'qux'], { cwd: 'qux' });
 checkIndexParser(['--quiet'], { quiet: true });
 checkIndexParser(['--show-progress-rate-limit', '120'], { showProgressRateLimit: 120 });

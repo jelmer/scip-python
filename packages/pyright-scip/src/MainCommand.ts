@@ -12,6 +12,9 @@ export interface IndexOptions {
     targetOnly?: string;
     infer?: { projectVersionFromCommit: boolean };
 
+    // Whether to emit `syntax_kind` occurrences for syntax highlighting.
+    syntaxHighlighting: boolean;
+
     // Progress reporting configuration
     quiet: boolean;
     showProgressRateLimit: number | undefined;
@@ -76,6 +79,7 @@ export function mainCommand(
             parseOptionalNum
         )
         .option('--environment <json-file>', 'the environment json file (experimental)')
+        .option('--no-syntax-highlighting', 'do not emit syntax highlighting occurrences')
         .option('--dev', 'run in developer mode (experimental)', false)
         .action((parsedOptions) => {
             indexAction(parsedOptions as IndexOptions);
@@ -96,6 +100,7 @@ export function mainCommand(
         )
         .option('--environment <json-file>', 'the environment json file (experimental)')
         .option('--no-index', 'skip indexing (use existing index.scip)')
+        .option('--no-syntax-highlighting', 'do not emit syntax highlighting occurrences')
         .option('--quiet', 'run without logging and status information', false)
         .option(
             '--show-progress-rate-limit <limit>',
